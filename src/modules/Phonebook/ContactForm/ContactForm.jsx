@@ -1,27 +1,19 @@
 import { Formik, Form, Field } from 'formik';
 import { useSelector, useDispatch } from 'react-redux';
-import { addContact } from '../../../redux/contacts/contacts-slice';
-import { getAllContacts } from '../../../redux/contacts/contacts-selectors';
+import { getIsLoading } from '../../../redux/contacts/contacts-selectors';
+import { addContact } from '../../../redux/contacts/contacts-operations';
+
 import css from './ContactForm.module.css';
 
 const ContactForm = () => {
   const dispatch = useDispatch();
-  const allContacts = useSelector(getAllContacts);
+  const isLoading = useSelector(getIsLoading);
   const initialValues = {
     name: '',
-    number: '',
+    phone: '',
   };
 
   const handleSubmit = (contact, { resetForm }) => {
-    const checkName = allContacts.find(
-      item => item.name.toLowerCase() === contact.name.toLowerCase()
-    );
-
-    if (checkName) {
-      alert(`${contact.name} has already added in contacts`);
-      return;
-    }
-
     dispatch(addContact(contact));
     resetForm();
   };
@@ -46,13 +38,13 @@ const ContactForm = () => {
           <Field
             className={css.input}
             type="tel"
-            name="number"
+            name="phone"
             pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
             title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
             required
           />
         </label>
-        <button className={css.btn} type="submit">
+        <button className={css.btn} type="submit" disabled={isLoading}>
           Add contact
         </button>
       </Form>
